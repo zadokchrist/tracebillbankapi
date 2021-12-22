@@ -317,5 +317,13 @@ namespace WaterAPI.Controllers
             return cust;
         }
 
+        [Route("api/GetTranStatus")]
+        [HttpPost]
+        public async Task<TranStatusResponse> GetTranStatus([FromBody] TranStatusRequest data) 
+        {
+            TranStatusResponse response = new TranStatusResponse();
+
+            return response;
+        }
     }
 }

@@ -22,3 +22,22 @@ public class PaymentData
     public string VendorCode { get; set; }//mandatory
     public string DigitalSignature { get; set; }//mandatory
 }
+
+public class TranStatusRequest 
+{
+    public TranStatusRequest() 
+    { }
+
+    public string VendorId { get; set; }
+    public string VendorCode { get; set; }
+}
+
+
+public class TranStatusResponse 
+{
+    public TranStatusResponse() 
+    { }
+    public string Tranid { get; set; }
+    public string VendorId { get; set; }
+    public string Status { get; set; }
+}
