@@ -16,8 +16,8 @@ public class DataStore
         try
         {
             BILLINGDB = DatabaseFactory.CreateDatabase("BILLING");
-            EpaymentDB = DatabaseFactory.CreateDatabase("Payments");
-            PROCDB = DatabaseFactory.CreateDatabase("PROCDB");
+            EpaymentDB = DatabaseFactory.CreateDatabase("BILLING");
+            PROCDB = DatabaseFactory.CreateDatabase("BILLING");
             // BILLINGDB = DatabaseFactory.CreateDatabase("Training");
             // EpaymentDB = DatabaseFactory.CreateDatabase("PaymentsTest");
         }
@@ -69,7 +69,7 @@ public class DataStore
     {
         try
         {
-            command = BILLINGDB.GetStoredProcCommand("LWC_IsValidCustomers", cref);
+            command = BILLINGDB.GetStoredProcCommand("Sp_CheckCustomerDetails", cref);
             returnData = BILLINGDB.ExecuteDataSet(command).Tables[0];
             return returnData;
         }

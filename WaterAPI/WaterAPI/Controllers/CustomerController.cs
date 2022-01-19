@@ -27,9 +27,7 @@ namespace WaterAPI.Controllers
         SendMail mail = new SendMail();
 
         [Route("api/verifyCustomer")]
-        [HttpPost]
- 
-        public async Task<VerifyCust> verifyCustomer([FromBody] VerificationData data)
+        [HttpPost]        public async Task<VerifyCust> verifyCustomer([FromBody] VerificationData data)
         {
             VerifyCust cust = new VerifyCust();
             if (data == null)
@@ -72,10 +70,10 @@ namespace WaterAPI.Controllers
                                     foreach (DataRow row in dt.Rows)
                                     {
                                         customer.AccountBalance = row["AccountBalance"].ToString();
-                                        customer.CustRef = row["CustRef"].ToString();
-                                        customer.CustName = row["cust_fullname"].ToString();
+                                        customer.CustRef = row["paymentRef"].ToString();
+                                        customer.CustName = row["fullName"].ToString();
                                         customer.PropRef = row["PropertyRef"].ToString();
-                                        customer.ZoneName = row["ZoneName"].ToString();
+                                        customer.ZoneName = row["area"].ToString();
 
                                     }
                                     cust.title = "success";
