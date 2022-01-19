@@ -43,7 +43,7 @@ public class DataStore
     {
         try
         {
-            command = BILLINGDB.GetStoredProcCommand("LWC_IsValidCustomersEP", cref);
+            command = BILLINGDB.GetStoredProcCommand("Sp_CheckCustomerDetails", cref);
             returnData = BILLINGDB.ExecuteDataSet(command).Tables[0];
             return returnData;
         }
@@ -56,7 +56,7 @@ public class DataStore
     {
         try
         {
-            command = EpaymentDB.GetStoredProcCommand("getVendorTransId", vendor, transid);
+            command = EpaymentDB.GetStoredProcCommand("sp_GetTransactionByVendor", vendor, transid);
             returnData = EpaymentDB.ExecuteDataSet(command).Tables[0];
         }
         catch (Exception ex)
@@ -125,12 +125,9 @@ public class DataStore
         {
             //check if this already exists
 
-            command = EpaymentDB.GetStoredProcCommand("PostOnline_PostPayments",
-             money.custref, money.custname,
-             money.transid, money.vendor, money.zone, money.type, money.amount
-             , money.signature, money.propref, money.zoneCode,
-             money.reconciled, money.description, money.date, money.paymentmethod, money.testData
-             );
+            command = EpaymentDB.GetStoredProcCommand("Sp_SavePaymentTransaction",
+             money.custref, money.custname, money.date, money.amount, money.type,
+             money.transid, money.vendor, money.paymentmethod, money.zone,  money.testData);
             if (EpaymentDB.ExecuteNonQuery(command) > 0)
             {
                 result = true;

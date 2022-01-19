@@ -210,7 +210,7 @@ namespace WaterAPI.Controllers
                                 if (dtvendor.Rows.Count>0)
                                 {
                                    
-                                    String vendorName = dtvendor.Rows[0]["VendorName"].ToString();
+                                    String vendorName = dtvendor.Rows[0]["VendorCode"].ToString();
                                            
                                     
                                     //continue with the data
@@ -220,7 +220,7 @@ namespace WaterAPI.Controllers
                                         foreach (DataRow row in dt.Rows)
                                         {
                                             String propertyRef = row["PropertyRef"].ToString();
-                                            String zonename = row["ZoneName"].ToString();
+                                            String zonename = row["branchName"].ToString();
                                             String zoneCode = row["PropertyRef"].ToString();
                                             OnlinePayment money = new OnlinePayment();
                                             money.amount = Double.Parse(data.Amount);
@@ -260,7 +260,7 @@ namespace WaterAPI.Controllers
                                                 if (dh.LWC_OnlinePayment(money))
                                                 {
                                                     cust.ResponseCode = "00";
-                                                    cust.Description = "Payment Successfully Received by Lagos Water";
+                                                    cust.Description = "Payment Successfully Received by Ogun State Water Coorporation";
                                                 }
                                             }
                                          }//foreach customer (this customer)
@@ -281,7 +281,7 @@ namespace WaterAPI.Controllers
                         }
                         catch (Exception er)
                         {
-                            mail.SendEmail("icytreyrichards@yahoo.com", "Bank Code" + data.VendorCode + " Request " + cust.Description + "-" + er.ToString(), "error from lwc payments api");
+                            mail.SendEmail("ngobidaniel04@gmail.com", "Bank Code" + data.VendorCode + " Request " + cust.Description + "-" + er.ToString(), "error from ogun payments api");
                             cust.Description = "Please wait as our Engineers fix the erro or contact System Administrator";
                             cust.ResponseCode = "06";
                         }
@@ -320,7 +320,74 @@ namespace WaterAPI.Controllers
         public async Task<TranStatusResponse> GetTranStatus([FromBody] TranStatusRequest data) 
         {
             TranStatusResponse response = new TranStatusResponse();
+            if (data == null)
+            {
+                response.Status = "Wrong Request";
+            }
+            else
+            {
+                // string result = await Request.Content.ReadAsStringAsync();        
+                var request = HttpContext.Current.Request;
+                var authHeader = request.Headers["Authorization"];
+                if (authHeader != null)
+                {
+                    var authHeaderVal = AuthenticationHeaderValue.Parse(authHeader);
+                    // RFC 2617 sec 1.2, "scheme" name is case-insensitive
+                    if (authHeaderVal.Scheme.Equals("basic",
+                            StringComparison.OrdinalIgnoreCase) &&
+                        authHeaderVal.Parameter != null)
+                    {
+                        string auth = authHeaderVal.Parameter;
+                        var credentialBytes = Convert.FromBase64String(auth);
+                        var credentials = Encoding.UTF8.GetString(credentialBytes).Split(':');
+                        var api = credentials[0];
+                        var password = credentials[1];
+                        string vendor = data.VendorCode;
+                        //
+                        try
+                        {
+                            Boolean isvalidconnection = LordMayer.isValidApi(vendor, api, password);
+                            if (isvalidconnection)
+                            {
+                                //continue with the data
+                                DataTable dt = dh.getVendorTransId(vendor, data.VendorId);
+                                if (dt.Rows.Count > 0)
+                                {
+                                    response.VendorId = dt.Rows[0]["vendorTransactionRef"].ToString();
+                                    response.Tranid = dt.Rows[0]["recordId"].ToString();
+                                    response.Status = "SUCCESS";
+                                }
+                                else
+                                {
+                                    response.Status = "INVALID TRANSACTION ID";
+                                }
+                            }
+                            else
+                            {
+                                //prepare a response
+                                response.Status = "invalid vendor";
+                            }
+                        }
+                        catch (Exception er)
+                        {
+                            response.Status = "Please wait as our Engineers fix the erro or contact System Administrator";
+                        }
 
+                    }
+                    else
+                    {
+                        response.Status = "Basic Authorisation mis Match (Best example) (Authorisation:Basic ....)";
+                    }
+                }
+                else
+                {
+                    var resp = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                    resp.Content = new StringContent("Authorisation Header Missing");
+                    var message = "Authorisation Header Missing";
+                    HttpError err = new HttpError(message);
+                    response.Status = "Basic Authorisation Response Header Missing";
+                }
+            }
             return response;
         }
     }
