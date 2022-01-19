@@ -69,7 +69,7 @@ namespace WaterAPI.Controllers
                                 {
                                     foreach (DataRow row in dt.Rows)
                                     {
-                                        customer.AccountBalance = row["AccountBalance"].ToString();
+                                        customer.AccountBalance = row["outstanding"].ToString();
                                         customer.CustRef = row["paymentRef"].ToString();
                                         customer.CustName = row["fullName"].ToString();
                                         customer.PropRef = row["PropertyRef"].ToString();
